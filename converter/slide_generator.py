@@ -60,7 +60,10 @@ class SlideGenerator:
             font = ImageFont.truetype("DejaVuSans.ttf", font_size)
         except OSError:  # pragma: no cover - fallback
             font = ImageFont.load_default()
-        text_width, text_height = draw.textsize(text, font=font)
+        # Usa textbbox() ao invés de textsize() (removido no Pillow 10+)
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
         padding = 32
         x = max((width - text_width) // 2, padding)
         y = height - text_height - padding

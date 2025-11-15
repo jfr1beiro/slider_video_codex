@@ -1,14 +1,20 @@
 from pathlib import Path
 
+from PIL import Image
+
 from converter.slide_generator import SlideGenerator
 
 
 def _create_frame(path: Path) -> None:
-    path.write_bytes(b"frame-data")
+    """Cria uma imagem PNG válida para os testes."""
+    # Cria uma imagem simples de 100x100 pixels
+    image = Image.new("RGB", (100, 100), color="red")
+    # Salva a imagem
+    image.save(path, format="PNG")
 
 
 def test_generate_slide_creates_file(tmp_path):
-    frame = tmp_path / "frame.bin"
+    frame = tmp_path / "frame.png"
     _create_frame(frame)
     generator = SlideGenerator(output_dir=tmp_path / "slides", image_size=(50, 50))
 
@@ -23,7 +29,7 @@ def test_generate_slide_creates_file(tmp_path):
 def test_generate_from_frames_respects_overlay_list(tmp_path):
     frames = []
     for index in range(3):
-        frame = tmp_path / f"frame_{index}.bin"
+        frame = tmp_path / f"frame_{index}.png"
         _create_frame(frame)
         frames.append(frame)
 
