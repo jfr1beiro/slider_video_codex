@@ -1,0 +1,96 @@
+# MCP Robust (Python) – Esboço e Estrutura do Projeto
+
+Use este roteiro como entrada para `cloud.py` da Anthropic ao gerar o projeto. Ele descreve claramente o que deve ser produzido, mantendo fidelidade ao conteúdo discutido originalmente.
+
+## Objetivo do Projeto
+- Construir um aplicativo APK a partir de uma base Python + Kivy (ou framework multiplataforma equivalente) que permita o upload, a conversão e o gerenciamento de vídeos/slides para apresentação dinâmica.
+- Garantir modularidade e extensibilidade para futuras integrações (e.g., serviços de nuvem, análises de uso).
+
+## Requisitos Funcionais
+1. **Upload e Conversão**
+   - Aceitar vídeos em múltiplos formatos (MP4, MOV, AVI).
+   - Converter cada vídeo em sequências de slides/frames otimizados para dispositivos móveis.
+2. **Editor de Slides**
+   - Interface para reorganizar, excluir ou duplicar slides.
+   - Inserção de textos curtos, legendas e anotações.
+3. **Player Dinâmico**
+   - Reprodução automática com controles (play/pause, avançar/voltar).
+   - Sincronização opcional com áudio original.
+4. **Exportação**
+   - Gerar pacote final pronto para distribuição (APK) com assets embutidos.
+   - Gerar relatório JSON com metadados (duração, número de slides, etc.).
+5. **Configurações**
+   - Modo claro/escuro.
+   - Preferências de idioma (pt-BR por padrão).
+
+## Requisitos Não Funcionais
+- Código em Python 3.11+.
+- Estrutura orientada a componentes (Pattern MVVM ou similar).
+- Testes unitários para camadas de conversão e manipulação de slides (Pytest).
+- Documentação automática (Sphinx ou MkDocs) hospedada no GitHub Pages.
+
+## Estrutura Recomendada do Repositório
+```
+mcp-robust-apk/
+├── app/
+│   ├── main.py
+│   ├── view/
+│   ├── viewmodel/
+│   └── services/
+├── converter/
+│   ├── __init__.py
+│   ├── video_ingest.py
+│   └── slide_generator.py
+├── tests/
+│   ├── test_video_ingest.py
+│   └── test_slide_generator.py
+├── assets/
+│   └── sample/
+├── requirements.txt
+├── pyproject.toml
+├── README.md
+└── docs/
+    └── index.md
+```
+
+## Especificações de Componentes
+### `converter/video_ingest.py`
+- Função `extract_frames(video_path: str, fps: int) -> list[Path]`.
+- Tratamento de erros: vídeo ausente, codec não suportado, etc.
+
+### `converter/slide_generator.py`
+- Classe `SlideGenerator` com métodos para aplicar filtros, sobrepor textos e gerar miniaturas.
+- Depende de Pillow e OpenCV.
+
+### `app/viewmodel/session_state.py`
+- Armazena estado atual do projeto (lista de slides, posição no player, configurações de tema).
+- Implementar observadores para atualizar a view automaticamente.
+
+### `app/view/screens/editor_screen.py`
+- Tela principal para reordenar slides (drag & drop) e editar metadados.
+- Botão "Exportar" que dispara `services/exporter.py`.
+
+## Fluxo Principal
+1. Usuário importa o vídeo.
+2. Serviço `video_ingest` valida e extrai frames.
+3. `slide_generator` cria slides otimizados.
+4. ViewModel atualiza lista de slides e notifica a view.
+5. Usuário edita/organiza slides e exporta APK + JSON.
+
+## Testes e Validação
+- `pytest tests/ --maxfail=1 --disable-warnings`
+- Adicionar workflow GitHub Actions com matriz (Windows, Ubuntu, macOS) e Python 3.11/3.12.
+
+## Documentação
+- Configurar `docs/` com MkDocs Material.
+- Publicar via GitHub Pages (workflow `deploy-docs.yml`).
+
+## Segurança e Logs
+- Sanitizar entradas de arquivo (whitelist de extensões e tamanho máximo).
+- Logging estruturado em JSON para auditoria.
+
+## Naming Suggestions
+- **Repositório GitHub:** `mcp-robust-apk-builder`.
+- **Arquivo principal de prompt:** `mcp_robust_prompt.txt` (este arquivo).
+
+Utilize estas diretrizes para que o `cloud.py` gere o scaffolding completo do projeto mantendo a visão original.
